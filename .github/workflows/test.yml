@@ -50,6 +50,6 @@ jobs:
           PGHOST: localhost
           PGPORT: 5432
           PGUSER: testuser
-          PGPASSWORD: testpasswords
+          PGPASSWORD: testpassword
           PGDATABASE: testdb
         run: pytest
