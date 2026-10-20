@@ -12,6 +12,21 @@ jobs:
       matrix:
         pytest-version: ["8.4.0", "9.0.0", "9.1.1"]
 
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -23,9 +38,18 @@ jobs:
       
       - name: Install pytest
         run: python -m pip install pytest==${{ matrix.pytest-version }}
-      
+
+      - name: Install psycopg
+        run: python -m pip install psycopg[binary]
+
       - name: Print pytest version
         run: pytest --version
 
       - name: Run tests
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: testuser
+          PGPASSWORD: testpassword
+          PGDATABASE: testdb
         run: pytest
